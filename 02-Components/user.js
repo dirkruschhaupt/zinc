@@ -17,4 +17,6 @@
         },
         email: 'jack.burton@example.com'
     };
+    //console.log(userData);
+    Zinc.userData = userData;
 })();
