@@ -6,10 +6,22 @@ const Zinc = {};
 
 (() => {
 
-  function hilite() {
+  function hilight() {
     this.firstElementChild.classList.toggle('hilight');
-    console.log(hilight);
+    console.log(this);
   };
+
+  Zinc.registerComponent = function(configObj) {
+    if (!Zinc.components) {
+      Zinc.components = {};
+    }
+    Zinc.components[element.configObj] = {
+      name: configObj.elementName,
+      templateFile: configObj.templateFile,
+      data: configObj.data,
+      controller: configObj.controller
+    }
+  }
 
   function renderComponent(element, content, data, controller) {
     let regex = /{{\s*([\w.]+)\s*}}/g;
@@ -35,23 +47,23 @@ const Zinc = {};
       for(let component in components) {
         //passing content in object to function to render components (put content in html)
         renderComponent(
-          components[component].elementName,
+          components[component].name,
           components[component].templateFile,
-          components[component].dataObject,
+          components[component].data,
           components[component].controller)
       }
     }
 
-    Zinc.registerComponent = function(elementName, templateFile, dataObject, controller) {
+    Zinc.registerComponent = function(configObj) {
         if (!Zinc.components) {
           Zinc.components = {};
         }
-        Zinc.components[elementName] = {
-          elementName,
-          templateFile,
-          dataObject,
-          controller
-        }
+        Zinc.components[configObj.name] = {
+          name: configObj.name,
+          templateFile: configObj.templateFile,
+          data: configObj.data,
+          controller: configObj.controller
+        };
     }
 
     function init() {
@@ -63,7 +75,14 @@ const Zinc = {};
       .then(res => res.json())
       .then(data => {
         data.results.forEach(user => {
-          Zinc.registerComponent('user-item', 'user', user, hilite);
+
+          Zinc.registerComponent({
+              name: 'user-item',
+              templateFile: 'user',
+              data: user,
+              controller: hilight
+          });
+
           renderComponents(Zinc.components);
         })
       })
